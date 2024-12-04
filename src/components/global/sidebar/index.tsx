@@ -18,7 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import Modal from "../modal";
 
-import { Menu, PlusCircle, Users } from "lucide-react";
+import { Menu, PlusCircle } from "lucide-react";
 import Search from "../search";
 import { MENU_ITEMS } from "@/constants";
 

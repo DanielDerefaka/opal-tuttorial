@@ -11,7 +11,7 @@ import GlobalHeader from '@/components/global/global-header'
 
 type Params = Promise<{ workspaceId: string }>
 
-const Layout = async ( { params }: { params: Params }, children: React.ReactNode) => {
+const Layout = async ( { params, children }: { params: Params, children: React.ReactNode}) => {
   
   const { workspaceId } = await params
 
@@ -51,20 +51,15 @@ await query.prefetchQuery({
 
 
   return (
-   <HydrationBoundary state={dehydrate(query)}>
-    <div className='flex h-screen w-screen'>
+    <HydrationBoundary state={dehydrate(query)}>
+    <div className="flex h-screen w-screen">
       <Sidebar activeWorkspaceId={workspaceId} />
-      <div className="p-6 pt-28 overflow-y-scroll overflow-x-hidden w-full">
-        <GlobalHeader workspace={hasAccess.data?.workspace} />
-
-        <div className="mt-4">
-          {children}
-        </div>
-
+      <div className="w-full pt-28 p-6 overflow-y-scroll overflow-x-hidden">
+        <GlobalHeader workspace={hasAccess.data.workspace} />
+        <div className="mt-4">{children}</div>
       </div>
-     
     </div>
-   </HydrationBoundary>
+  </HydrationBoundary>
   )
 }
 
