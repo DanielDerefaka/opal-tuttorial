@@ -1,4 +1,4 @@
-import { getNotifications, onAuthentication } from '@/actions/user'
+import { getNotifications, onAuthenticateUser } from '@/actions/user'
 import { getAllUserVideos, getWorkSpaces, getWorkspaceFolders, verifyAccessToWorkspace } from '@/actions/workspace'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -17,7 +17,7 @@ const Layout = async ( { params, children }: { params: Params, children: React.R
 
   console.log(workspaceId)  
     
-    const auth = await onAuthentication()
+    const auth = await onAuthenticateUser()
     
     if (!auth.user?.workspace) redirect('/auth/sign-in')
     if (!auth.user.workspace.length) redirect('/auth/sign-in')
