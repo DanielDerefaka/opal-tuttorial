@@ -3,15 +3,14 @@
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
-export const onAuthentication = async () => {
+export const onAuthenticateUser = async () => {
   try {
-    const user = await currentUser();
-
+    const user = await currentUser()
     if (!user) {
-      return { status: 403, message: "unauthenticated" };
+      return { status: 403 }
     }
 
-    const userexist = await client.user.findUnique({
+    const userExist = await client.user.findUnique({
       where: {
         clerkid: user.id,
       },
@@ -24,12 +23,11 @@ export const onAuthentication = async () => {
           },
         },
       },
-    });
-
-    if (userexist) {
-      return { status: 200, message: "authenticated", user: userexist   };
+    })
+    if (userExist) {
+      return { status: 200, user: userExist }
     }
-
+    
     const newUser = await client.user.create({
       data: {
         clerkid: user.id,
@@ -38,49 +36,43 @@ export const onAuthentication = async () => {
         lastname: user.lastName,
         image: user.imageUrl,
         studio: {
-            create: {
-
-            }
+          create: {},
         },
-        subscription : {
-            create: {}
+        subscription: {
+          create: {},
         },
         workspace: {
-            create: {
-                name: `${user.firstName}'s Workspace`,
-                type: "PERSONAL"
-            }
+          create: {
+            name: `${user.firstName}'s Workspace`,
+            type: 'PERSONAL',
+          },
         },
-
-     
       },
       include: {
         workspace: {
-            where: {
-                User: {
-                    clerkid: user.id
-                }
-            }
+          where: {
+            User: {
+              clerkid: user.id,
+            },
+          },
         },
         subscription: {
-            select: {
-                plan: true,
-            }
-        }
+          select: {
+            plan: true,
+          },
+        },
       },
-    });
-
+    })
     if (newUser) {
-      return { status: 201, message: "authenticated", user: newUser };
-    }   
-
-    return { status: 403, message: "unauthenticated" }; 
+      return { status: 201, user: newUser }
+    }
+    return { status: 400 }
   } catch (error) {
-    console.log(error);
-    return { status: 500, message: "internal server error" };
-};
-
+    console.log('🔴 ERROR', error)
+    return { status: 500 }
+  }
 }
+
 
 export const getNotifications = async () => {
 
