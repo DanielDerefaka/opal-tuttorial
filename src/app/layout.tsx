@@ -4,6 +4,8 @@ import "./globals.css";
 import { Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/theme";
 import ReactQueryProvider from "@/react-query";
+import { ReduxProvider } from "@/redux/provider";
+import { Toaster } from "sonner";
 
 
 const manrope = Manrope({
@@ -30,9 +32,13 @@ export default function RootLayout({
         className={`${manrope.variable} bg-[#171717] antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <ReduxProvider  > 
           <ReactQueryProvider>
             {children}
+            <Toaster/>
           </ReactQueryProvider>
+          </ReduxProvider>
+          
         </ThemeProvider>
       </body>
     </html>

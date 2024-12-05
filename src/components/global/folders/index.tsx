@@ -7,7 +7,9 @@ import Folder from './folder'
 import { useQueryData } from '@/hooks/use-QueryData'
 import { getWorkspaceFolders } from '@/actions/workspace'
 import { useMutationDataState } from '@/hooks/use-mutationdata'
-// import Videos from '../videos'
+import { useDispatch } from 'react-redux'
+import Videos from '../videos'
+import { FOLDERS } from '@/redux/slices/folders'
 
 
 type Props = {
@@ -29,7 +31,7 @@ export type FoldersProps = {
 }
 
 const Folders = ({ workspaceId }: Props) => {
-//   const dispatch = useDispatch()
+  const dispatch = useDispatch()
   //get folders
   const { data, isFetched } = useQueryData(['workspace-folders'], () =>
     getWorkspaceFolders(workspaceId)
@@ -39,12 +41,12 @@ const Folders = ({ workspaceId }: Props) => {
 
   const { status, data: folders } = data as FoldersProps
 
-  // if (isFetched && folders) {
-  // }
+  if (isFetched && folders) {
+  }
 
-//   if (isFetched && folders) {
-//     dispatch(FOLDERS({ folders: folders }))
-//   }
+  if (isFetched && folders) {
+    dispatch(FOLDERS({ folders: folders }))
+  }
 
   return (
     <div
@@ -89,11 +91,11 @@ const Folders = ({ workspaceId }: Props) => {
           </>
         )}
       </div>
-      {/* <Videos
+      <Videos
         workspaceId={workspaceId}
         folderId={workspaceId}
         videosKey="user-videos"
-      /> */}
+      />
     </div>
   )
 }

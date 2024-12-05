@@ -71,24 +71,17 @@ export const getWorkspaceFolders = async (workSpaceId: string) => {
   }
 }
 
-export const getAllUserVideos = async (workspaceId: string) => {
+export const getAllUserVideos = async (workSpaceId: string) => {
   try {
-    const user = await currentUser();
-    if (!user)
-      return {
-        status: 404,
-        message: "User Not Found",
-        data: { videos: null },
-      };
-
+    const user = await currentUser()
+    if (!user) return { status: 404 }
     const videos = await client.video.findMany({
       where: {
-        OR: [{ workSpaceId: workspaceId }, { folderId: workspaceId }],
+        OR: [{ workSpaceId }, { folderId: workSpaceId }],
       },
       select: {
         id: true,
         title: true,
-        description: true,
         createdAt: true,
         source: true,
         processing: true,
@@ -100,7 +93,6 @@ export const getAllUserVideos = async (workspaceId: string) => {
         },
         User: {
           select: {
-            id: true,
             firstname: true,
             lastname: true,
             image: true,
@@ -108,31 +100,20 @@ export const getAllUserVideos = async (workspaceId: string) => {
         },
       },
       orderBy: {
-        createdAt: "asc",
+        createdAt: 'asc',
       },
-    });
+    })
 
-    if (videos && videos.length > 0)
-      return {
-        status: 200,
-        message: "Videos Found",
-        data: { videos },
-      };
+    if (videos && videos.length > 0) {
+      return { status: 200, data: videos }
+    }
 
-    return {
-      status: 404,
-      message: "No Videos Found",
-      data: { videos: [] },
-    };
+    return { status: 404 }
   } catch (error) {
-    console.log(error);
-    return {
-      status: 403,
-      message: "Internal Server Error",
-      data: { videos: null },
-    };
+    return { status: 400 }
   }
-};
+}
+
 
 export const getWorkSpaces = async () => {
   try {
@@ -181,10 +162,9 @@ export const getWorkSpaces = async () => {
 };
 
 export const createWorkspace = async (name: string) => {
-  const user = await currentUser();
-  if (!user) return { status: 404 };
-
   try {
+    const user = await currentUser()
+    if (!user) return { status: 404 }
     const authorized = await client.user.findUnique({
       where: {
         clerkid: user.id,
@@ -196,32 +176,35 @@ export const createWorkspace = async (name: string) => {
           },
         },
       },
-    });
+    })
 
-    if (authorized?.subscription?.plan === "PRO") {
+    if (authorized?.subscription?.plan === 'PRO') {
       const workspace = await client.user.update({
         where: {
-          id: user.id,
+          clerkid: user.id,
         },
         data: {
           workspace: {
             create: {
               name,
-              type: "PUBLIC",
+              type: 'PUBLIC',
             },
           },
         },
-      });
-
-      return { status: 201,  data: "Workspace Created" };
+      })
+      if (workspace) {
+        return { status: 201, data: 'Workspace Created' }
+      }
     }
-
-    return { status: 401, data: "You are not authorized to create a workspace" };
+    return {
+      status: 401,
+      data: 'You are not authorized to create a workspace.',
+    }
   } catch (error) {
-    console.log(error);
-    return { status: 403, message: "Internal Server Error" };
+    return { status: 400 }
   }
-};
+}
+
 
 
 export const renameFolder = async (folderId: string, name: string) => {
@@ -305,5 +288,28 @@ export const getFolderInfo = async (folderId: string) => {
       status: 500,
       data: null,
     }
+  }
+}
+
+export const moveVideoLocation = async (
+  videoId: string,
+  workSpaceId: string,
+  folderId: string
+) => {
+  try {
+    const location = await client.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        folderId: folderId || null,
+        workSpaceId,
+      },
+    })
+    if (location) return { status: 200, data: 'folder changed successfully' }
+    return { status: 404, data: 'workspace/folder not found' }
+  } catch (error) {
+    console.log(error)
+    return { status: 500, data: 'Oops! something went wrong' }
   }
 }
