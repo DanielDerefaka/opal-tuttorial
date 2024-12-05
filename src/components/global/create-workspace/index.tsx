@@ -28,7 +28,7 @@ const CreateWorkspace = () => {
     if(plan?.subscription?.plan === 'PRO'){
         return (
             <div>
-                <Modal trigger={<Button className='bg-[#1D1D1D] text-[#707070] flex items-center gap-2 py-2 px-4 rounded-xl'><FolderPlusDuotine/> Create a Workspace</Button>} title='Create Workspace' description='Create a new workspace to get started, it helps you collaborate with your team members'>
+                <Modal trigger={<Button className='bg-[#1D1D1D] text-[#707070] flex items-center gap-2  py-6  px-4 rounded-xl'><FolderPlusDuotine/> Create a Workspace</Button>} title='Create Workspace' description='Create a new workspace to get started, it helps you collaborate with your team members'>
 
                 <WorkspaceForm/> 
                 </Modal>
